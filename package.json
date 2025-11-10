@@ -1,0 +1,9 @@
+{
+  "name": "event_booking",
+  "version": "1.0.0",
+  "description": "api for event reserving",
+  "main": "index.js",
+  "scripts": {
+    "test": ""
+  }
+}
