@@ -29,7 +29,12 @@ export default [
       eqeqeq: ['error', 'smart'],
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+
+        },
       ],
     },
   },
