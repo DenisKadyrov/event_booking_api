@@ -1,12 +1,10 @@
-import dotenv from 'dotenv';
-import path from 'path';
+import dotenv from "dotenv";
+import Config from './types/Config.js'
 
+dotenv.config();
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
-
-export const config = {
-  // nodeEnv: process.env.NODE_ENV ?? 'development',
-  port: Number(process.env.SERVER_PORT ?? 3000),
-  dbUrl: process.env.DB_URL ?? '',
-  // logLevel: process.env.LOG_LEVEL ?? 'info',
+export const config: Config = {
+  dbUrl: process.env.DATABASE_URL ?? "",
+  port: Number(process.env.PORT) || 3000,
+  nodeEnv: (process.env.NODE_ENV as "development" | "production" | "test") ?? "development",
 };
