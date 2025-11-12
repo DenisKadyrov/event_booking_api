@@ -1,0 +1,36 @@
+import type { IEventRepository } from '../../domain/IEventRepository.js';
+import { Event } from '../../domain/Event.js';
+import { events } from '../database/schema.js';
+import { eq } from 'drizzle-orm';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+
+export class DrizzleEventRepository implements IEventRepository {
+  private readonly db: NodePgDatabase;
+
+  constructor(db: NodePgDatabase) {
+    this.db = db;
+  }
+
+  async create(event: Event): Promise<Event> {
+    const rows = await this.db
+      .insert(events)
+      .values({
+        name: event.name,
+        totalSeats: event.totalSeats,
+      })
+      .returning();
+    const row = rows[0];
+    return new Event(row.id, row.name, row.totalSeats);
+  }
+  async findById(id: number): Promise<Event | null> {
+    const rows = await this.db.select().from(events).where(eq(events.id, id)).limit(1);
+    const row = rows[0];
+    if (!row) return null;
+    return new Event(row.id, row.name, row.totalSeats);
+  }
+
+  async listAll(): Promise<Event[]> {
+    const rows = await this.db.select().from(events);
+    return rows.map((r) => new Event(r.id, r.name, r.totalSeats));
+  }
+}
