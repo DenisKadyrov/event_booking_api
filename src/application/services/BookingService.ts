@@ -7,6 +7,9 @@ import {
   InvalidInputError,
   SeatUnavailableError,
 } from '../../domain/errors.js';
+import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { DrizzleEventRepository } from '../../infrastructure/repositories/DrizzleEventRepository.js';
+import { DrizzleBookingRepository } from '../../infrastructure/repositories/DrizzleBookingRepository.js';
 
 export interface ReserveSeatInput {
   eventId: number;
@@ -17,6 +20,7 @@ export class BookingService {
   constructor(
     private readonly bookingRepository: IBookingRepository,
     private readonly eventRepository: IEventRepository,
+    private readonly db: NodePgDatabase,
   ) {}
 
   async reserveSeat({ eventId, userId }: ReserveSeatInput): Promise<Booking> {
@@ -25,25 +29,33 @@ export class BookingService {
       throw new InvalidInputError('User id must not be empty');
     }
 
-    const event = await this.eventRepository.findById(eventId);
-    if (!event) {
-      throw new EventNotFoundError(eventId);
-    }
+    // Используем транзакцию для предотвращения race condition
+    return await this.db.transaction(async (tx) => {
+      // Создаем транзакционные репозитории
+      const txEventRepository = new DrizzleEventRepository(tx);
+      const txBookingRepository = new DrizzleBookingRepository(tx);
 
-    const existingBooking = await this.bookingRepository.findByUserAndEvent(trimmedUserId, eventId);
+      // Проверяем существование события
+      const event = await txEventRepository.findById(eventId);
+      if (!event) {
+        throw new EventNotFoundError(eventId);
+      }
 
-    if (existingBooking) {
-      throw new AlreadyBookedError(trimmedUserId, eventId);
-    }
+      // Проверяем, не забронировал ли уже пользователь место
+      const existingBooking = await txBookingRepository.findByUserAndEvent(trimmedUserId, eventId);
+      if (existingBooking) {
+        throw new AlreadyBookedError(trimmedUserId, eventId);
+      }
 
-    const bookings = await this.bookingRepository.listByEvent(eventId);
+      // Проверяем доступность мест (используем count для оптимизации)
+      const bookingsCount = await txBookingRepository.countByEvent(eventId);
+      if (bookingsCount >= event.totalSeats) {
+        throw new SeatUnavailableError(eventId);
+      }
 
-    if (bookings.length >= event.totalSeats) {
-      throw new SeatUnavailableError(eventId);
-    }
-
-    const booking = new Booking(eventId, trimmedUserId);
-
-    return this.bookingRepository.create(booking);
+      // Создаем бронирование
+      const booking = new Booking(eventId, trimmedUserId);
+      return txBookingRepository.create(booking);
+    });
   }
 }
