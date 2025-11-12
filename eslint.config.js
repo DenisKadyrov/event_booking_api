@@ -33,9 +33,24 @@ export default [
           argsIgnorePattern: '^_',
           varsIgnorePattern: '^_',
           ignoreRestSiblings: true,
-
         },
       ],
     },
+    overrides: [
+      {
+        files: ['**/domain/**/*.ts', '**/interfaces/**/*.ts', '**/I*.ts', '**/*Interface*.ts', '**/*Abstract*.ts'],
+        rules: {
+          '@typescript-eslint/no-unused-vars': [
+            'error',
+            {
+              argsIgnorePattern: '^_',
+              varsIgnorePattern: '^_',
+              ignoreRestSiblings: true,
+              args: 'none',
+            },
+          ],
+        },
+      },
+    ],
   },
 ];
