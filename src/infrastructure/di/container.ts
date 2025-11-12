@@ -1,11 +1,10 @@
-import { createContainer, asValue } from "awilix";
-// import { logger } from "../logger/index.js";
+import { createContainer, asValue, asFunction } from "awilix";
 import { config } from '../../config.js';
-
+import { createDatabase } from '../database/client.js';
 
 const container = createContainer();
 
 container.register({
   config: asValue(config),
-  // logger: asClass(logger).singleton(),
+  db: asFunction(createDatabase).singleton(),
 });
