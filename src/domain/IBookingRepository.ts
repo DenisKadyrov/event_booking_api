@@ -1,4 +1,4 @@
-import { Booking } from "./Booking.js";
+import { Booking } from './Booking.js';
 
 export interface IBookingRepository {
   findByUserAndEvent(userId: string, eventId: number): Promise<Booking | null>;
