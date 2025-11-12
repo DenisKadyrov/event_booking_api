@@ -8,10 +8,9 @@ services:
       POSTGRES_PASSWORD: booking_pass
       POSTGRES_DB: booking_db
     ports:
-      - "5433:5432"
+      - '5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
 
 volumes:
   pgdata:
-
