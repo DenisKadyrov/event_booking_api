@@ -4,8 +4,8 @@ import type { BookingService } from '../../../application/services/BookingServic
 import { InvalidInputError } from '../../../domain/errors.js';
 
 const reserveSchema = z.object({
-  event_id: z.coerce.number().int().positive(),
-  user_id: z.string().min(1).max(255),
+  eventId: z.coerce.number().int().positive(),
+  userId: z.string().min(1).max(255),
 });
 
 type ReserveRequestBody = z.infer<typeof reserveSchema>;
@@ -65,8 +65,8 @@ export function createBookingRouter(deps: { bookingService: BookingService }) {
       try {
         const body: ReserveRequestBody = reserveSchema.parse(req.body);
         const booking = await deps.bookingService.reserveSeat({
-          eventId: body.event_id,
-          userId: body.user_id,
+          eventId: body.eventId,
+          userId: body.userId,
         });
         const response: ReserveResponse = {
           id: booking.id,
