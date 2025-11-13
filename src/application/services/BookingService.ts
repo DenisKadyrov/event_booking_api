@@ -17,11 +17,23 @@ export interface ReserveSeatInput {
 }
 
 export class BookingService {
-  constructor(
-    private readonly bookingRepository: IBookingRepository,
-    private readonly eventRepository: IEventRepository,
-    private readonly db: Database,
-  ) {}
+  bookingRepository: IBookingRepository;
+  eventRepository: IEventRepository;
+  db: Database;
+
+  constructor({
+    bookingRepository,
+    eventRepository,
+    db,
+  }: {
+    bookingRepository: IBookingRepository;
+    eventRepository: IEventRepository;
+    db: Database;
+  }) {
+    this.bookingRepository = bookingRepository;
+    this.eventRepository = eventRepository;
+    this.db = db;
+  }
 
   async reserveSeat({ eventId, userId }: ReserveSeatInput): Promise<Booking> {
     const trimmedUserId = userId.trim();
@@ -34,6 +46,8 @@ export class BookingService {
       // Создаем транзакционные репозитории
       const txEventRepository = new DrizzleEventRepository(tx);
       const txBookingRepository = new DrizzleBookingRepository(tx);
+
+      // todo: Проверяем существует ли пользователь с таким id
 
       // Проверяем существование события
       const event = await txEventRepository.findById(eventId);
