@@ -2,15 +2,34 @@ services:
   postgres:
     image: postgres:16
     container_name: booking_postgres
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: booking_user
       POSTGRES_PASSWORD: booking_pass
       POSTGRES_DB: booking_db
     ports:
       - '5433:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U booking_user -d booking_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: booking_app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://booking_user:booking_pass@postgres:5432/booking_db
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:
