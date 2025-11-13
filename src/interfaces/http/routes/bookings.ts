@@ -20,6 +20,45 @@ interface ReserveResponse {
 export function createBookingRouter(deps: { bookingService: BookingService }) {
   const router = Router();
 
+  /**
+   * @openapi
+   * /api/bookings/reserve:
+   *   post:
+   *     summary: Забронировать место на событие
+   *     tags:
+   *       - Bookings
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - eventId
+   *               - userId
+   *             properties:
+   *               eventId:
+   *                 type: integer
+   *                 example: 1
+   *               userId:
+   *                 type: string
+   *                 example: "user-123"
+   *     responses:
+   *       200:
+   *         description: Бронирование успешно
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 bookingId:
+   *                   type: integer
+   *                   example: 42
+   *       400:
+   *         description: Некорректные данные
+   *       409:
+   *         description: Место уже забронировано
+   */
   router.post(
     '/reserve',
     async (req: Request, res: Response<ReserveResponse>, next: NextFunction) => {
