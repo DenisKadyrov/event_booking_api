@@ -1,15 +1,19 @@
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import container from './infrastructure/di/container.js';
 import { createBookingRouter } from './interfaces/http/routes/bookings.js';
 import { errorHandler } from './interfaces/http/middleware/errorHandler.js';
 import { logger } from './infrastructure/logger/index.js';
 import { config } from './config.js';
 
+interface HealthResponse {
+  status: 'ok';
+}
+
 const app = express();
 
 app.use(express.json());
 
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: Request, res: Response<HealthResponse>) => {
   res.json({ status: 'ok' });
 });
 

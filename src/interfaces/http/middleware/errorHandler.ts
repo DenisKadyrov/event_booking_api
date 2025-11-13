@@ -8,6 +8,11 @@ import {
 } from '../../../domain/errors.js';
 import { logger } from '../../../infrastructure/logger/index.js';
 
+interface ErrorResponse {
+  error: string;
+  message: string;
+}
+
 function mapDomainErrorToStatus(error: DomainError): number {
   if (error instanceof InvalidInputError) {
     return 400;
@@ -24,13 +29,19 @@ function mapDomainErrorToStatus(error: DomainError): number {
   return 400;
 }
 
-export function errorHandler(error: unknown, _req: Request, res: Response, _next: NextFunction) {
+export function errorHandler(
+  error: unknown,
+  _req: Request,
+  res: Response<ErrorResponse>,
+  _next: NextFunction,
+): void {
   if (error instanceof DomainError) {
     const status = mapDomainErrorToStatus(error);
-    res.status(status).json({
+    const response: ErrorResponse = {
       error: error.name,
       message: error.message,
-    });
+    };
+    res.status(status).json(response);
     return;
   }
 
@@ -41,8 +52,9 @@ export function errorHandler(error: unknown, _req: Request, res: Response, _next
     'Unhandled error',
   );
 
-  res.status(500).json({
+  const response: ErrorResponse = {
     error: 'InternalServerError',
     message: 'Internal server error',
-  });
+  };
+  res.status(500).json(response);
 }

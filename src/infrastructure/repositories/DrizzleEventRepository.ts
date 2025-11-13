@@ -2,12 +2,12 @@ import type { IEventRepository } from '../../domain/IEventRepository.js';
 import { Event } from '../../domain/Event.js';
 import { events } from '../database/schema.js';
 import { eq } from 'drizzle-orm';
-import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type { Database } from '../database/client.js';
 
 export class DrizzleEventRepository implements IEventRepository {
-  private readonly db: NodePgDatabase;
+  private readonly db: Database;
 
-  constructor(db: NodePgDatabase) {
+  constructor(db: Database) {
     this.db = db;
   }
 
@@ -20,6 +20,9 @@ export class DrizzleEventRepository implements IEventRepository {
       })
       .returning();
     const row = rows[0];
+    if (!row) {
+      throw new Error('Failed to create event: no row returned');
+    }
     return new Event(row.id, row.name, row.totalSeats);
   }
   async findById(id: number): Promise<Event | null> {

@@ -2,13 +2,14 @@ import type { IBookingRepository } from '../../domain/IBookingRepository.js';
 import { Booking } from '../../domain/Booking.js';
 import { bookings } from '../database/schema.js';
 import { and, eq, sql } from 'drizzle-orm';
-import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type { Database } from '../database/client.js';
 import { AlreadyBookedError } from '../../domain/errors.js';
+import { isPostgresError, POSTGRES_ERROR_CODES } from '../database/types.js';
 
 export class DrizzleBookingRepository implements IBookingRepository {
-  private readonly db: NodePgDatabase;
+  private readonly db: Database;
 
-  constructor(db: NodePgDatabase) {
+  constructor(db: Database) {
     this.db = db;
   }
 
@@ -33,15 +34,13 @@ export class DrizzleBookingRepository implements IBookingRepository {
         })
         .returning();
       const row = rows[0];
+      if (!row) {
+        throw new Error('Failed to create booking: no row returned');
+      }
       return new Booking(row.eventId, row.userId, row.id, row.createdAt ?? undefined);
     } catch (error: unknown) {
       // Обработка ошибки уникальности PostgreSQL
-      if (
-        error &&
-        typeof error === 'object' &&
-        'code' in error &&
-        error.code === '23505' // unique_violation
-      ) {
+      if (isPostgresError(error) && error.code === POSTGRES_ERROR_CODES.UNIQUE_VIOLATION) {
         throw new AlreadyBookedError(booking.userId, booking.eventId);
       }
       throw error;
@@ -55,9 +54,13 @@ export class DrizzleBookingRepository implements IBookingRepository {
 
   async countByEvent(eventId: number): Promise<number> {
     const result = await this.db
-      .select({ count: sql<number>`count(*)` })
+      .select({ count: sql<number>`count(*)::int` })
       .from(bookings)
       .where(eq(bookings.eventId, eventId));
-    return Number(result[0]?.count ?? 0);
+    const count = result[0]?.count;
+    if (typeof count !== 'number') {
+      return 0;
+    }
+    return count;
   }
 }

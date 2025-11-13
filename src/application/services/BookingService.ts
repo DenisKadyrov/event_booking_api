@@ -7,7 +7,7 @@ import {
   InvalidInputError,
   SeatUnavailableError,
 } from '../../domain/errors.js';
-import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import type { Database } from '../../infrastructure/database/client.js';
 import { DrizzleEventRepository } from '../../infrastructure/repositories/DrizzleEventRepository.js';
 import { DrizzleBookingRepository } from '../../infrastructure/repositories/DrizzleBookingRepository.js';
 
@@ -20,7 +20,7 @@ export class BookingService {
   constructor(
     private readonly bookingRepository: IBookingRepository,
     private readonly eventRepository: IEventRepository,
-    private readonly db: NodePgDatabase,
+    private readonly db: Database,
   ) {}
 
   async reserveSeat({ eventId, userId }: ReserveSeatInput): Promise<Booking> {
