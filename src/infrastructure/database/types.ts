@@ -29,4 +29,3 @@ export const POSTGRES_ERROR_CODES = {
   FOREIGN_KEY_VIOLATION: '23503',
   NOT_NULL_VIOLATION: '23502',
 } as const;
-

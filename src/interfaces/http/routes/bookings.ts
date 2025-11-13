@@ -20,29 +20,32 @@ interface ReserveResponse {
 export function createBookingRouter(deps: { bookingService: BookingService }) {
   const router = Router();
 
-  router.post('/reserve', async (req: Request, res: Response<ReserveResponse>, next: NextFunction) => {
-    try {
-      const body: ReserveRequestBody = reserveSchema.parse(req.body);
-      const booking = await deps.bookingService.reserveSeat({
-        eventId: body.event_id,
-        userId: body.user_id,
-      });
-      const response: ReserveResponse = {
-        id: booking.id,
-        event_id: booking.eventId,
-        user_id: booking.userId,
-        created_at: booking.createdAt.toISOString(),
-      };
-      res.status(201).json(response);
-    } catch (error: unknown) {
-      if (error instanceof ZodError) {
-        const message = error.issues.map((issue) => issue.message).join('; ');
-        next(new InvalidInputError(message));
-        return;
+  router.post(
+    '/reserve',
+    async (req: Request, res: Response<ReserveResponse>, next: NextFunction) => {
+      try {
+        const body: ReserveRequestBody = reserveSchema.parse(req.body);
+        const booking = await deps.bookingService.reserveSeat({
+          eventId: body.event_id,
+          userId: body.user_id,
+        });
+        const response: ReserveResponse = {
+          id: booking.id,
+          event_id: booking.eventId,
+          user_id: booking.userId,
+          created_at: booking.createdAt.toISOString(),
+        };
+        res.status(201).json(response);
+      } catch (error: unknown) {
+        if (error instanceof ZodError) {
+          const message = error.issues.map((issue) => issue.message).join('; ');
+          next(new InvalidInputError(message));
+          return;
+        }
+        next(error);
       }
-      next(error);
-    }
-  });
+    },
+  );
 
   return router;
 }
