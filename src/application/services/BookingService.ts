@@ -47,8 +47,6 @@ export class BookingService {
       const txEventRepository = new DrizzleEventRepository(tx);
       const txBookingRepository = new DrizzleBookingRepository(tx);
 
-      // todo: Проверяем существует ли пользователь с таким id
-
       // Проверяем существование события
       const event = await txEventRepository.findById(eventId);
       if (!event) {
