@@ -15,6 +15,9 @@ REST API для управления событиями, пользовател�
 
 ## Локальный запуск
 ```bash
+git clone https://github.com/DenisKadyrov/event_booking_api.git
+cd event_booking_api
+mv .env.example .env
 npm install
 npm run db:migrate
 npm run dev
@@ -46,4 +49,3 @@ npm test
 - `src/domain` — доменные сущности и ошибки
 - `src/interfaces/http` — Express-маршруты и middleware
 - `src/infrastructure` — инфраструктурные абстракции, БД и DI
-
