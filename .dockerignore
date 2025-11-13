@@ -1,11 +1,9 @@
 node_modules
 dist
-drizzle
 coverage
 *.log
 npm-debug.log*
 pnpm-lock.yaml
-package-lock.json
 yarn.lock
 .DS_Store
 .env
