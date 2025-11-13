@@ -1,5 +1,6 @@
 import express, { type Request, type Response } from 'express';
 import container from './infrastructure/di/container.js';
+import { setupSwagger } from './infrastructure/swagger.js';
 import { createBookingRouter } from './interfaces/http/routes/bookings.js';
 import { errorHandler } from './interfaces/http/middleware/errorHandler.js';
 import { logger } from './infrastructure/logger/index.js';
@@ -10,6 +11,8 @@ interface HealthResponse {
 }
 
 const app = express();
+
+setupSwagger(app);
 
 app.use(express.json());
 
