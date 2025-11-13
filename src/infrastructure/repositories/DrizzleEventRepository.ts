@@ -23,17 +23,17 @@ export class DrizzleEventRepository implements IEventRepository {
     if (!row) {
       throw new Error('Failed to create event: no row returned');
     }
-    return new Event(row.id, row.name, row.totalSeats);
+    return new Event(row.name, row.totalSeats, row.id);
   }
   async findById(id: number): Promise<Event | null> {
     const rows = await this.db.select().from(events).where(eq(events.id, id)).limit(1);
     const row = rows[0];
     if (!row) return null;
-    return new Event(row.id, row.name, row.totalSeats);
+    return new Event(row.name, row.totalSeats, row.id);
   }
 
   async listAll(): Promise<Event[]> {
     const rows = await this.db.select().from(events);
-    return rows.map((r) => new Event(r.id, r.name, r.totalSeats));
+    return rows.map((r) => new Event(r.name, r.totalSeats, r.id));
   }
 }
