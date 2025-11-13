@@ -8,6 +8,20 @@
       "when": 1762949068559,
       "tag": "0000_flaky_firebird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1763022182517,
+      "tag": "0001_clumsy_mongoose",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763032877775,
+      "tag": "0002_conscious_nico_minoru",
+      "breakpoints": true
     }
   ]
 }

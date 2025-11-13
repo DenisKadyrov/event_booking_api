@@ -1,6 +1,6 @@
 {
-  "id": "1f97d9c7-5b7d-44a7-854d-ccffff1b39a0",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "55115e66-8569-445c-b0f9-18163facf2dc",
+  "prevId": "1f97d9c7-5b7d-44a7-854d-ccffff1b39a0",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -35,9 +35,25 @@
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "bookings_event_id_events_id_fk": {
+          "name": "bookings_event_id_events_id_fk",
+          "tableFrom": "bookings",
+          "tableTo": "events",
+          "columnsFrom": ["event_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "bookings_event_id_user_id_unique": {
+          "name": "bookings_event_id_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["event_id", "user_id"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
