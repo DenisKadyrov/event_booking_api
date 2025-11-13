@@ -7,6 +7,7 @@ export default [
   {
     ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
   },
+
   js.configs.recommended,
   {
     files: ['**/*.ts'],
@@ -36,21 +37,26 @@ export default [
         },
       ],
     },
-    overrides: [
-      {
-        files: ['**/domain/**/*.ts', '**/interfaces/**/*.ts', '**/I*.ts', '**/*Interface*.ts', '**/*Abstract*.ts'],
-        rules: {
-          '@typescript-eslint/no-unused-vars': [
-            'error',
-            {
-              argsIgnorePattern: '^_',
-              varsIgnorePattern: '^_',
-              ignoreRestSiblings: true,
-              args: 'none',
-            },
-          ],
-        },
-      },
+  },
+
+  {
+    files: [
+      '**/domain/**/*.ts',
+      '**/interfaces/**/*.ts',
+      '**/I*.ts',
+      '**/*Interface*.ts',
+      '**/*Abstract*.ts',
     ],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+          args: 'none',
+        },
+      ],
+    },
   },
 ];
